@@ -66,29 +66,224 @@ One note before you delve into your tasks: for each endpoint you are expected to
 8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions. 
 9. Create error handlers for all expected errors including 400, 404, 422 and 500. 
 
-REVIEW_COMMENT
+### Endpoints 
+#### GET /questions
+- General:
+    - Returns a list of question objects, success value, and total number of questions
+    - Results are paginated in groups of 10. Include a request argument to choose page number, starting from 1. 
+- Sample: `curl http://127.0.0.1:5000/questions`
+
+``` {
+    "categories": {
+        "1": "Science",
+        "2": "Geography",
+        "3": "Art",
+        "4": "History",
+        "5": "Sports",
+        "6": "Entertainment"
+    },
+    "current_category": "ALL",
+    "questions": [
+        {
+            "answer": "Wildflowers",
+            "category": 1,
+            "difficulty": 2,
+            "id": 2,
+            "question": "Super Pink Moon gets its name from....."
+        },
+        {
+            "answer": "Richard Nolle",
+            "category": 1,
+            "difficulty": 1,
+            "id": 3,
+            "question": "Who coined the term “Supermoon”?"
+        }
+    ],
+    "success": true,
+    "total_questions": 2
+}
 ```
-This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
 
-Endpoints
-GET '/categories'
-GET ...
-POST ...
-DELETE ...
-
-GET '/categories'
-- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
-- Request Arguments: None
-- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
-
+#### POST /questions
+- General:
+    - Creates a new question using the submitted question, answer, category and difficulty. Returns the id of the created question, success value, total questions, and question list based on current page number to update the frontend. 
+- Sample: `curl http://127.0.0.1:5000/questions?page=1 -X POST -H "Content-Type: application/json" -d '{"answer": "area","category": 2,"difficulty": 1,"id": 4,"question": "The Homolographic projection has the correct representation of"}'`
+```
+{
+    "categories": {
+        "1": "Science",
+        "2": "Geography",
+        "3": "Art",
+        "4": "History",
+        "5": "Sports",
+        "6": "Entertainment"
+    },
+    "current_category": "ALL",
+    "questions": [
+        {
+            "answer": "Wildflowers",
+            "category": 1,
+            "difficulty": 2,
+            "id": 2,
+            "question": "Super Pink Moon gets its name from....."
+        },
+        {
+            "answer": "Richard Nolle",
+            "category": 1,
+            "difficulty": 1,
+            "id": 3,
+            "question": "Who coined the term “Supermoon”?"
+        },
+        {
+            "answer": "area",
+            "category": 2,
+            "difficulty": 1,
+            "id": 4,
+            "question": "The Homolographic projection has the correct representation of"
+        }
+    ],
+    "success": true,
+    "total_questions": 3
+}
+```
+#### DELETE /questions/{question_id}
+- General:
+    - Deletes the book of the given ID if it exists. Returns the id of the deleted book, success value, total books, and book list based on current page number to update the frontend. 
+- Sample : `curl -X DELETE http://127.0.0.1:5000/questions/4`
+```
+{
+    "categories": {
+        "1": "Science",
+        "2": "Geography",
+        "3": "Art",
+        "4": "History",
+        "5": "Sports",
+        "6": "Entertainment"
+    },
+    "current_category": "ALL",
+    "questions": [
+        {
+            "answer": "Wildflowers",
+            "category": 1,
+            "difficulty": 2,
+            "id": 2,
+            "question": "Super Pink Moon gets its name from....."
+        },
+        {
+            "answer": "Richard Nolle",
+            "category": 1,
+            "difficulty": 1,
+            "id": 3,
+            "question": "Who coined the term “Supermoon”?"
+        }
+    ],
+    "success": true,
+    "total_questions": 2
+}
+```
+#### GET /categories
+- General:
+    - Returns a list of categories objects.
+- Sample: `curl http://127.0.0.1:5000/categories`
+```
+{
+    "categories": {
+        "1": "Science",
+        "2": "Geography",
+        "3": "Art",
+        "4": "History",
+        "5": "Sports",
+        "6": "Entertainment"
+    }
+}
 ```
 
+#### GET /categories/<category_id>/questions
+- General:
+    - Returns a list of questions in a category.
+- Sample: `curl http://127.0.0.1:5000/categories/1/questions`
+```
+{
+    "current_category": "Science",
+    "questions": [
+        {
+            "answer": "Wildflowers",
+            "category": 1,
+            "difficulty": 2,
+            "id": 2,
+            "question": "Super Pink Moon gets its name from....."
+        },
+        {
+            "answer": "Richard Nolle",
+            "category": 1,
+            "difficulty": 1,
+            "id": 3,
+            "question": "Who coined the term “Supermoon”?"
+        }
+    ],
+    "success": true,
+    "total_questions": 2
+}
+```
+
+#### POST /questions/search
+- General:
+    - Returns a list of questions matching the search pattern in a question.
+- Sample: `curl http://127.0.0.1:5000/questions/search -X POST -H "Content-Type: application/json" -d '{"searchTerm": "moon"}' `
+```
+{
+    "current_category": "ALL",
+    "questions": [
+        {
+            "answer": "Wildflowers",
+            "category": 1,
+            "difficulty": 2,
+            "id": 2,
+            "question": "Super Pink Moon gets its name from....."
+        },
+        {
+            "answer": "Richard Nolle",
+            "category": 1,
+            "difficulty": 1,
+            "id": 3,
+            "question": "Who coined the term “Supermoon”?"
+        }
+    ],
+    "success": true,
+    "total_questions": 2
+}
+```
+
+#### POST /quizzes
+- General:
+    - This endpoint should take category and previous question parameters and return a random questions within the given category, if         provided, and that is not one of the previous questions.
+- Sample: `curl http://127.0.0.1:5000/quizzes -X POST -H "Content-Type: application/json" -d '{"previous_questions":[],"quiz_category":       {"type": "Geography", "id": "2"}}' `
+```
+{
+    "previousQuestions": null,
+    "question": {
+        "answer": "area",
+        "category": 2,
+        "difficulty": 1,
+        "id": 4,
+        "question": "The Homolographic projection has the correct representation of"
+    }
+}
+```
+
+### Error Handling
+Errors are returned as JSON objects in the following format:
+```
+{
+    "success": False, 
+    "error": 400,
+    "message": "bad request"
+}
+```
+The API will return three error types when requests fail:
+- 400: Bad Request
+- 404: Resource Not Found
+- 422: Not Processable 
 
 ## Testing
 To run the tests, run
