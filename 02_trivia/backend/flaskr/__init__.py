@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
 
+
 from models import setup_db, Question, Category
 from flask_cors import CORS
 
@@ -100,6 +101,7 @@ def create_app(test_config=None):
     question.delete()
 
     return jsonify({
+        "id" : question_id,
         "success" : True
       })
 
@@ -122,10 +124,9 @@ def create_app(test_config=None):
       difficulty = request.get_json()['difficulty']
       question_obj = Question(question,answer,category,difficulty)
       question_obj.insert()
-      result={
-        "success" : True
-      }
-      return result
+      return jsonify({
+          "success" : True
+        })
     except:
       abort(400)
 
@@ -200,22 +201,23 @@ def create_app(test_config=None):
   def play_quiz():
     quiz_category = request.get_json()['quiz_category']
     previous_questions = request.get_json()['previous_questions']
-    try :
-      if quiz_category['type']!='click':
-        if len(previous_questions) ==0:
-          questions_list = [question.id for question in Question.query.filter(Question.id.notin_(previous_questions), Question.category==quiz_category['id'])]
-        else :
-          questions_list = [question.id for question in Question.query.filter(Question.category==quiz_category['id']).all()]
-      else:
-        if len(previous_questions) ==0:
-          questions_list = [question.id for question in Question.query.filter(Question.id.notin_(previous_questions))]
-        else :
-          questions_list = [question.id for question in Question.query.all()]
 
-      random_question_id = random.choice(questions_list)
+    try :
+      if quiz_category['id']==0:
+          questions_list = [question.id for question in Question.query.filter(Question.id.notin_(previous_questions))]
+      else:
+          questions_list = [question.id for question in Question.query.filter(Question.id.notin_(previous_questions), Question.category==quiz_category['id'])]
+
+
+      if len(questions_list)==0:
+        question=None
+      else:
+        random_question_id = random.choice(questions_list)
+        question = Question.query.get(random_question_id).format()
+
       return jsonify({
-          'previousQuestions' : previous_questions.append(random_question_id),
-          'question' : Question.query.get(random_question_id).format()
+          'previous_questions' : previous_questions,
+          'question' : question
         })
     except:
       abort(422)
