@@ -12,33 +12,190 @@ That's where you come in! Help them finish the trivia app so they can start hold
 4) Search for questions based on a text query string.
 5) Play the quiz game, randomizing either all questions or within a specific category. 
 
-Completing this trivia app will give you the ability to structure plan, implement, and test an API - skills essential for enabling your future applications to communicate with others. 
+Getting Started
+Pre-requisites and Local Development
+Developers using this project should already have Python3, pip and node installed on their local machines.
 
-## Tasks
+Backend
+From the backend folder run pip install requirements.txt. All required packages are included in the requirements file.
 
-There are `TODO` comments throughout project. Start by reading the READMEs in:
+To run the application run the following commands:
 
-1. [`./frontend/`](./frontend/README.md)
-2. [`./backend/`](./backend/README.md)
+export FLASK_APP=flaskr
+export FLASK_ENV=development
+flask run
+These commands put the application in development and directs our application to use the __init__.py file in our flaskr folder. Working in development mode shows an interactive debugger in the console and restarts the server whenever changes are made. If running locally on Windows, look for the commands in the Flask documentation.
 
-We recommend following the instructions in those files in order. This order will look familiar from our prior work in the course.
+The application is run on http://127.0.0.1:5000/ by default and is a proxy in the frontend configuration.
 
-## Starting and Submitting the Project
+Frontend
+From the frontend folder, run the following commands to start the client:
 
-[Fork](https://help.github.com/en/articles/fork-a-repo) the [project repository]() and [Clone](https://help.github.com/en/articles/cloning-a-repository) your forked repository to your machine. Work on the project locally and make sure to push all your changes to the remote repository before submitting the link to your repository in the Classroom. 
+npm install // only once to install dependencies
+npm start 
+By default, the frontend will run on localhost:3000.
 
-## About the Stack
+Tests
+In order to run tests navigate to the backend folder and run the following commands:
 
-We started the full stack application for you. It is desiged with some key functional areas:
+dropdb trivia_test
+createdb trivia_test
+psql trivia_test < trivia.psql
+python test_flaskr.py
+The first time you run the tests, omit the dropdb command.
 
-### Backend
+All tests are kept in that file and should be maintained as updates are made to app functionality.
 
-The `./backend` directory contains a partially completed Flask and SQLAlchemy server. You will work primarily in app.py to define your endpoints and can reference models.py for DB and SQLAlchemy setup. 
+API Reference
+Getting Started
+Base URL: At present this app can only be run locally and is not hosted as a base URL. The backend app is hosted at the default, http://127.0.0.1:5000/, which is set as a proxy in the frontend configuration.
+Authentication: This version of the application does not require authentication or API keys.
+Error Handling
+Errors are returned as JSON objects in the following format:
 
-### Frontend
+{
+    "success": False, 
+    "error": 400,
+    "message": "bad request"
+}
+The API will return three error types when requests fail:
 
-The `./frontend` directory contains a complete React frontend to consume the data from the Flask server. You will need to update the endpoints after you define them in the backend. Those areas are marked with TODO and can be searched for expediency. 
+400: Bad Request
+404: Resource Not Found
+422: Not Processable
+Endpoints
+GET /questions
+General:
+Returns a list of questions objects, success value, and total number of books
+Results are paginated in groups of 10 Include a request argument to choose page number, starting from 1.
+Sample: curl http://127.0.0.1:5000/questions
+  "books": [
+    {
+      "author": "Stephen King",
+      "id": 1,
+      "rating": 5,
+      "title": "The Outsider: A Novel"
+    },
+    {
+      "author": "Lisa Halliday",
+      "id": 2,
+      "rating": 5,
+      "title": "Asymmetry: A Novel"
+    },
+    {
+      "author": "Kristin Hannah",
+      "id": 3,
+      "rating": 5,
+      "title": "The Great Alone"
+    },
+    {
+      "author": "Tara Westover",
+      "id": 4,
+      "rating": 5,
+      "title": "Educated: A Memoir"
+    },
+    {
+      "author": "Jojo Moyes",
+      "id": 5,
+      "rating": 5,
+      "title": "Still Me: A Novel"
+    },
+    {
+      "author": "Leila Slimani",
+      "id": 6,
+      "rating": 5,
+      "title": "Lullaby"
+    },
+    {
+      "author": "Amitava Kumar",
+      "id": 7,
+      "rating": 5,
+      "title": "Immigrant, Montana"
+    },
+    {
+      "author": "Madeline Miller",
+      "id": 8,
+      "rating": 5,
+      "title": "CIRCE"
+    }
+  ],
+"success": true,
+"total_books": 18
+}
+POST /questions
+General:
+Creates a new question using the submitted question, answer, category and difficults. Returns the id of the created book, success value, total books, and book list based on current page number to update the frontend.
+curl http://127.0.0.1:5000/books?page=3 -X POST -H "Content-Type: application/json" -d '{"title":"Neverwhere", "author":"Neil Gaiman", "rating":"5"}'
+{
+  "books": [
+    {
+      "author": "Neil Gaiman",
+      "id": 24,
+      "rating": 5,
+      "title": "Neverwhere"
+    }
+  ],
+  "created": 24,
+  "success": true,
+  "total_books": 17
+}
+DELETE /questions/{question_id}
+General:
+Deletes the question of the given ID if it exists. Returns the id of the deleted book, success value, total books, and book list based on current page number to update the frontend.
+curl -X DELETE http://127.0.0.1:5000/questions/2?page=2
+{
+  "books": [
+    {
+      "author": "Gina Apostol",
+      "id": 9,
+      "rating": 5,
+      "title": "Insurrecto: A Novel"
+    },
+    {
+      "author": "Tayari Jones",
+      "id": 10,
+      "rating": 5,
+      "title": "An American Marriage"
+    },
+    {
+      "author": "Jordan B. Peterson",
+      "id": 11,
+      "rating": 5,
+      "title": "12 Rules for Life: An Antidote to Chaos"
+    },
+    {
+      "author": "Kiese Laymon",
+      "id": 12,
+      "rating": 1,
+      "title": "Heavy: An American Memoir"
+    },
+    {
+      "author": "Emily Giffin",
+      "id": 13,
+      "rating": 4,
+      "title": "All We Ever Wanted"
+    },
+    {
+      "author": "Jose Andres",
+      "id": 14,
+      "rating": 4,
+      "title": "We Fed an Island"
+    },
+    {
+      "author": "Rachel Kushner",
+      "id": 15,
+      "rating": 1,
+      "title": "The Mars Room"
+    }
+  ],
+  "deleted": 16,
+  "success": true,
+  "total_books": 15
+}
 
-Pay special attention to what data the frontend is expecting from each API response to help guide how you format your API. 
+Deployment N/A
+Authors
+Palak Dhingra
 
-[View the README.md within ./frontend for more details.](./frontend/README.md)
+Acknowledgements
+The awesome team at Udacity.
